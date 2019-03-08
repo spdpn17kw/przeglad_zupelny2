@@ -1,21 +1,58 @@
-﻿// przeglad_zupelny2.cpp : Ten plik zawiera funkcję „main”. W nim rozpoczyna się i kończy wykonywanie programu.
-//
-
+﻿
 #include "pch.h"
 #include <iostream>
+#include <algorithm>
+#include <fstream>
 
+using namespace std;
+
+
+int cmax(int ex[], int **macierz, int **Cm, int number_of_ex, int n_m) {
+	int n_ex = number_of_ex + 1;
+	for (int i = 0; i <= n_m; i++) Cm[0][i] = 0;
+	for (int i = 0; i < n_ex; i++) Cm[i][0] = 0;
+	for (int i = 1; i <= n_m; i++) {
+		for (int j = 1; j <= number_of_ex; j++) {
+			Cm[j][i] = max(Cm[j][i - 1], Cm[j - 1][i]) + macierz[ex[j - 1] - 1][i - 1];
+			//cout << "Cm[" << j << "][" << i << "] = " << Cm[j][i];
+		}
+
+	}
+	return Cm[n_ex - 1][n_m];
+
+}
 int main()
 {
-    std::cout << "Hello World!\n"; 
+	int number_of_ex, n_m;
+	ifstream data("data.txt");
+	data >> number_of_ex;
+	int * ex = new int[number_of_ex];
+	data >> n_m;
+	int **macierz = new int *[number_of_ex];
+	int **Cm = new int *[number_of_ex + 1];
+	for (int j = 0; j < number_of_ex + 1; j++) Cm[j] = new int[n_m + 1];
+	for (int j = 0; j < number_of_ex; j++) {
+		ex[j] = j + 1;
+		macierz[j] = new int[n_m];
+		for (int i = 0; i < n_m; i++)
+			data >> macierz[j][i];
+	}
+	data.close();
+	// wyswietlenie
+	/*for (int i = 0; i < number_of_ex; ++i)
+	{
+		for (int j = 0; j < n_m; ++j)
+			cout << macierz[i][j] << " ";
+		cout << "\n";
+	}*/int number = 1;
+	cout << "The 3! possible permutations with 3 elements:\n";
+	do {
+		cout << number << ". ";
+		for (int i = 0; i < number_of_ex; i++) cout << ex[i] << ' ';
+		int Cmax;
+		Cmax = cmax(ex, macierz, Cm, number_of_ex, n_m);
+		cout << "Cmax= " << Cmax;
+		cout << '\n';
+		number++;
+	} while (next_permutation(ex, ex + number_of_ex));
 }
-
-// Uruchomienie programu: Ctrl + F5 lub menu Debugowanie > Uruchom bez debugowania
-// Debugowanie programu: F5 lub menu Debugowanie > Rozpocznij debugowanie
-
-// Porady dotyczące rozpoczynania pracy:
-//   1. Użyj okna Eksploratora rozwiązań, aby dodać pliki i zarządzać nimi
-//   2. Użyj okna programu Team Explorer, aby nawiązać połączenie z kontrolą źródła
-//   3. Użyj okna Dane wyjściowe, aby sprawdzić dane wyjściowe kompilacji i inne komunikaty
-//   4. Użyj okna Lista błędów, aby zobaczyć błędy
-//   5. Wybierz pozycję Projekt > Dodaj nowy element, aby utworzyć nowe pliki kodu, lub wybierz pozycję Projekt > Dodaj istniejący element, aby dodać istniejące pliku kodu do projektu
-//   6. Aby w przyszłości ponownie otworzyć ten projekt, przejdź do pozycji Plik > Otwórz > Projekt i wybierz plik sln
